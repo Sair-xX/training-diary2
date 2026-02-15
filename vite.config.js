@@ -16,9 +16,16 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: '/vite.svg',
+            src: '/icon-192.jpg',
             sizes: '192x192',
-            type: 'image/svg+xml'
+            type: 'image/jpeg',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/icon-512.jpg',
+            sizes: '512x512',
+            type: 'image/jpeg',
+            purpose: 'any maskable'
           }
         ]
       }

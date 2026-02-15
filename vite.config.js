@@ -14,20 +14,20 @@ export default defineConfig({
         theme_color: '#ff5722',
         background_color: '#0a0e27',
         display: 'standalone',
-        icons: [
-          {
-            src: '/icon-192.jpg',
-            sizes: '192x192',
-            type: 'image/jpeg',
-            purpose: 'any maskable'
-          },
-          {
-            src: '/icon-512.jpg',
-            sizes: '512x512',
-            type: 'image/jpeg',
-            purpose: 'any maskable'
-          }
-        ]
+  icons: [
+      {
+        src: '/pwa-192x192.jpg',
+        sizes: '192x192',
+        type: 'image/jpeg',
+        purpose: 'any maskable'
+      },
+      {
+        src: '/pwa-512x512.jpg',
+        sizes: '512x512',
+        type: 'image/jpeg',
+        purpose: 'any maskable'
+      }
+  ]
       }
     })
   ]

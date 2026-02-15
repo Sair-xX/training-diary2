@@ -445,3 +445,140 @@ body {
     font-size: 36px;
   }
 }
+/* ===== TagPage: old-like UI ===== */
+.tagOldPage {
+  min-height: 100vh;
+}
+
+.tagOldHero {
+  padding: 18px 16px 0;
+}
+
+.tagOldHeroInner {
+  max-width: 980px;
+  margin: 0 auto;
+  border-radius: 22px;
+  padding: 26px 18px;
+  background: linear-gradient(90deg, rgba(255, 106, 0, 0.95), rgba(255, 164, 0, 0.95));
+  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+}
+
+.tagOldHeroTitle {
+  text-align: center;
+  font-weight: 900;
+  font-size: 34px;
+  letter-spacing: 1px;
+  text-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
+.tagOldWrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 22px 16px 40px;
+}
+
+.tagOldSectionTitle {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  margin: 200px 0 32px;   /* ← ここ大きく */
+}
+
+.tagOldControls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 8px 0 16px;
+}
+
+.tagOldSearch {
+  width: min(680px, 100%);
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.18);
+  color: inherit;
+  outline: none;
+}
+
+.tagOldSort {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.18);
+  color: inherit;
+  cursor: pointer;
+}
+
+.tagOldTable {
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.14);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+}
+
+.tagOldTableHead {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background: linear-gradient(90deg, rgba(255, 106, 0, 0.95), rgba(255, 164, 0, 0.95));
+}
+
+.tagOldTh {
+  padding: 18px 16px;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.tagOldTableBody {
+  display: grid;
+}
+
+.tagOldTr {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  border-top: 1px solid rgba(255,255,255,0.10);
+}
+
+.tagOldTd {
+  padding: 16px 16px;
+}
+
+.tagOldDate {
+  font-weight: 800;
+}
+
+.tagOldComment {
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+.tagOldEmpty {
+  padding: 18px 16px;
+  opacity: 0.85;
+  text-align: center;
+}
+
+.tagOldBottom {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.tagOldBackBtn {
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 164, 0, 0.65);
+  background: rgba(0,0,0,0.16);
+  color: inherit;
+  font-weight: 800;
+}
+
+/* ===== ホーム画面の300px間 ===== */
+.homeBigGap {
+  height: 100px;
+}

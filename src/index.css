@@ -1,0 +1,447 @@
+/* =====================
+   グローバルスタイル
+   ===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app {
+  width: 100%;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+/* =====================
+   ヘッダー
+   ===================== */
+.app-header {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 24px;
+  overflow: hidden;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 8px 32px rgba(255, 87, 34, 0.3);
+}
+
+.header-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: brightness(0.7) contrast(1.2);
+}
+
+.snow-layer {
+  display: none;
+}
+
+.header-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 
+    0 0 20px rgba(255, 87, 34, 0.8),
+    0 0 40px rgba(255, 152, 0, 0.6),
+    2px 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #ff5722, #ff9800, #ffc107);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
+}
+
+/* =====================
+   連続記録（Streak）
+   ===================== */
+.streak {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(255, 87, 34, 0.5);
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* =====================
+   カレンダー
+   ===================== */
+.calendar-container {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 24px;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffc107;
+  padding: 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.calendar-day {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+  color: #b0b0b0;
+}
+
+.calendar-day:hover {
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.3), rgba(255, 152, 0, 0.3));
+  border-color: #ff9800;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
+}
+
+.calendar-day.selected {
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  color: #ffffff;
+  border-color: #ffc107;
+  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.6),
+              0 0 30px rgba(255, 152, 0, 0.5);
+  transform: scale(1.05);
+  font-weight: 900;
+}
+
+.calendar-day.has-tag {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.4), rgba(139, 195, 74, 0.4));
+  color: #ffffff;
+  border-color: #8bc34a;
+}
+
+.calendar-day.has-tag.selected {
+  background: linear-gradient(135deg, #4caf50, #8bc34a);
+  border-color: #cddc39;
+  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.6),
+              0 0 30px rgba(139, 195, 74, 0.5);
+}
+
+.calendar-blank {
+  aspect-ratio: 1 / 1;
+}
+
+/* =====================
+   日記エディター
+   ===================== */
+.diary-editor {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.1), rgba(255, 152, 0, 0.1));
+  border-radius: 20px;
+  border: 2px solid rgba(255, 152, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(255, 87, 34, 0.2);
+}
+
+.diary-editor h3 {
+  margin-bottom: 12px;
+  color: #ffc107;
+  font-size: 18px;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(255, 193, 7, 0.5);
+}
+
+.diary-editor textarea {
+  width: 100%;
+  min-height: 80px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 152, 0, 0.3);
+  padding: 12px;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  resize: vertical;
+  transition: all 0.3s ease;
+}
+
+.diary-editor textarea:focus {
+  outline: none;
+  border-color: #ff9800;
+  box-shadow: 0 0 20px rgba(255, 152, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* =====================
+   タグボタン
+   ===================== */
+.tag-menu, .tag-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tag-btn {
+  padding: 10px 20px;
+  border: 2px solid rgba(255, 152, 0, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 13px;
+}
+
+.tag-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.3), rgba(255, 152, 0, 0.3));
+  border-color: #ff9800;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
+}
+
+.tag-btn.selected, .tag-btn.active {
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  color: #ffffff;
+  border-color: #ffc107;
+  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.6),
+              0 0 30px rgba(255, 152, 0, 0.5);
+  transform: scale(1.05);
+}
+
+/* =====================
+   タグフィルターコメント表示
+   ===================== */
+.filtered-comments {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 32px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 152, 0, 0.2);
+  color: #ffffff;
+}
+
+.filtered-comments ul {
+  padding-left: 20px;
+}
+
+.filtered-comments li {
+  margin-bottom: 8px;
+  color: #ffc107;
+}
+
+/* =====================
+   月切り替えナビ
+   ===================== */
+.month-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 16px 0;
+  background: linear-gradient(180deg, rgba(26, 26, 46, 0.95), rgba(10, 14, 39, 0.98));
+  border-top: 2px solid rgba(255, 152, 0, 0.3);
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(255, 87, 34, 0.2);
+}
+
+.month-nav-btn {
+  padding: 10px 20px;
+  border: 2px solid rgba(255, 152, 0, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.month-nav-btn:hover {
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  border-color: #ffc107;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 87, 34, 0.5);
+}
+
+.month-nav-label {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffc107;
+  min-width: 140px;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(255, 193, 7, 0.5);
+}
+
+/* =====================
+   保存ボタン & メッセージ
+   ===================== */
+.save-btn {
+  display: block;
+  margin: 16px auto 0;
+  padding: 14px 40px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 0 6px 24px rgba(255, 87, 34, 0.5);
+}
+
+.save-btn:hover {
+  background: linear-gradient(135deg, #ff9800, #ffc107);
+  box-shadow: 0 8px 32px rgba(255, 152, 0, 0.7);
+  transform: translateY(-3px) scale(1.05);
+}
+
+.save-msg {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4caf50;
+  text-shadow: 0 2px 8px rgba(76, 175, 80, 0.6);
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================
+   タグページ専用テーブル
+   ===================== */
+.tag-table {
+  width: 90%;
+  max-width: 600px;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 152, 0, 0.3);
+}
+
+.tag-table th {
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  color: #ffffff;
+  padding: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tag-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 152, 0, 0.2);
+  color: #ffffff;
+}
+
+.tag-table tbody tr:hover {
+  background: rgba(255, 87, 34, 0.2);
+}
+
+/* =====================
+   デスクトップ レスポンシブ
+   ===================== */
+@media (min-width: 768px) {
+  .app-header {
+    max-width: 720px;
+  }
+
+  .calendar-container {
+    max-width: 720px;
+    gap: 14px;
+  }
+
+  .calendar-day {
+    font-size: 17px;
+    border-radius: 16px;
+  }
+
+  .calendar-weekday {
+    font-size: 15px;
+  }
+
+  .diary-editor {
+    max-width: 720px;
+  }
+
+  .diary-editor textarea {
+    min-height: 120px;
+    font-size: 16px;
+  }
+
+  .tag-menu, .tag-selector {
+    gap: 12px;
+  }
+
+  .tag-btn {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+
+  .filtered-comments {
+    max-width: 720px;
+  }
+
+  .streak {
+    font-size: 18px;
+  }
+
+  .header-title {
+    font-size: 36px;
+  }
+}

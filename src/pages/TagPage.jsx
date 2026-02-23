@@ -1,26 +1,15 @@
 import { useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
-function loadDiaryData() {
-  try {
-    const raw = localStorage.getItem("diaryData");
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
-// "2026-02-15" → "15日"（同月前提の表示。必要ならここを変えられる）
 function dayLabel(dateKey) {
-  return dateKey; // そのまま表示（YYYY-MM-DD）
+  return dateKey;
 }
 
-export default function TagPage() {
+export default function TagPage({ diaryData = {} }) {
   const { tagName } = useParams();
-  const diaryData = useMemo(loadDiaryData, []);
 
   const [query, setQuery] = useState("");
-  const [sortDesc, setSortDesc] = useState(false); // 旧UIは上から昇順っぽいので false 初期
+  const [sortDesc, setSortDesc] = useState(false);
 
   const rows = useMemo(() => {
     let list = Object.keys(diaryData)
@@ -40,7 +29,9 @@ export default function TagPage() {
     }
 
     list.sort((a, b) =>
-      sortDesc ? (a.dateKey < b.dateKey ? 1 : -1) : a.dateKey > b.dateKey ? 1 : -1
+      sortDesc
+        ? a.dateKey < b.dateKey ? 1 : -1
+        : a.dateKey > b.dateKey ? 1 : -1
     );
 
     return list;
@@ -48,7 +39,6 @@ export default function TagPage() {
 
   return (
     <div className="tagOldPage">
-      {/* タイトル帯（上のオレンジのやつっぽいイメージ） */}
       <div className="tagOldHero">
         <div className="tagOldHeroInner">
           <div className="tagOldHeroTitle">💪 筋トレ日記</div>
@@ -58,7 +48,6 @@ export default function TagPage() {
       <div className="tagOldWrap">
         <div className="tagOldSectionTitle">💪 {tagName}の記録一覧</div>
 
-        {/* コントロール：検索＋並び替え（機能は維持） */}
         <div className="tagOldControls">
           <input
             className="tagOldSearch"
@@ -71,7 +60,6 @@ export default function TagPage() {
           </button>
         </div>
 
-        {/* テーブル */}
         <div className="tagOldTable">
           <div className="tagOldTableHead">
             <div className="tagOldTh">日付</div>

@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-function DiaryEditor({ selectedDay, data, onCommentChange, onTagChange, onSave, tagList }) {
+function DiaryEditor({ selectedDay, data, onCommentChange, onTagChange, onSave, tagList, saving }) {
   const [saveMsg, setSaveMsg] = useState(false);
 
   if (!selectedDay) selectedDay = new Date().getDate();
 
-  const handleSave = () => {
-    onSave();
+  const handleSave = async () => {
+    await onSave();
     setSaveMsg(true);
     setTimeout(() => setSaveMsg(false), 2000);
   };
@@ -33,7 +33,9 @@ function DiaryEditor({ selectedDay, data, onCommentChange, onTagChange, onSave, 
         ))}
       </div>
 
-      <button className="save-btn" onClick={handleSave}>💪 保存</button>
+      <button className="save-btn" onClick={handleSave} disabled={saving}>
+        {saving ? "保存中..." : "💪 保存"}
+      </button>
       {saveMsg && <span className="save-msg">✅ 保存しました！</span>}
     </div>
   );

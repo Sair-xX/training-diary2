@@ -5,21 +5,23 @@ import {
   Route,
   useNavigate,
 } from "react-router-dom";
+import {
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+import {
+  doc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
+import { auth, provider, db } from "./firebase.js";
 import Header from "./components/Header.jsx";
 import Calendar from "./components/Calendar.jsx";
 import Streak from "./components/Streak.jsx";
 import DiaryEditor from "./components/DiaryEditor.jsx";
 import TagPage from "./pages/TagPage.jsx";
 import "./index.css";
-
-function loadDiaryData() {
-  try {
-    const raw = localStorage.getItem("diaryData");
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
 
 /* ===== 連続記録ロジック ===== */
 
@@ -33,15 +35,12 @@ function makeDateKeyLocal(d) {
 function hasAnyRecord(entry) {
   const tags = entry?.tags;
   if (!tags) return false;
-  return Object.values(tags).some(
-    (v) => String(v).trim().length > 0
-  );
+  return Object.values(tags).some((v) => String(v).trim().length > 0);
 }
 
 function calcStreak(diaryData) {
   let count = 0;
   const cur = new Date();
-
   while (true) {
     const key = makeDateKeyLocal(cur);
     if (hasAnyRecord(diaryData[key])) {
@@ -51,21 +50,52 @@ function calcStreak(diaryData) {
       break;
     }
   }
-
   return count;
+}
+
+/* ===== ログイン画面 ===== */
+
+function LoginPage({ onLogin }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="login-page">
+      <div className="login-card">
+        <div className="login-icon">💪</div>
+        <h1 className="login-title">筋トレ日記</h1>
+        <p className="login-subtitle">記録を残して、毎日続けよう</p>
+        <button
+          className="login-btn"
+          onClick={handleLogin}
+          disabled={loading}
+        >
+          {loading ? "ログイン中..." : "Googleでログイン"}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 /* ===== HomePage ===== */
 
-function HomePage() {
+function HomePage({ user, diaryData, setDiaryData }) {
   const now = new Date();
   const [currentYear, setCurrentYear] = useState(now.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(now.getMonth() + 1);
   const [selectedDay, setSelectedDay] = useState(now.getDate());
-  const [diaryData, setDiaryData] = useState(loadDiaryData);
-  const [streak, setStreak] = useState(() =>
-    calcStreak(loadDiaryData())
-  );
+  const [streak, setStreak] = useState(() => calcStreak(diaryData));
+  const [saving, setSaving] = useState(false);
 
   const navigate = useNavigate();
 
@@ -98,9 +128,19 @@ function HomePage() {
     setSelectedTag(tag);
   };
 
-  const handleSave = () => {
-    localStorage.setItem("diaryData", JSON.stringify(diaryData));
-    setStreak(calcStreak(diaryData));
+  // Firestoreに保存
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const ref = doc(db, "diaries", user.uid);
+      await setDoc(ref, { data: diaryData }, { merge: false });
+      setStreak(calcStreak(diaryData));
+    } catch (e) {
+      console.error("保存失敗:", e);
+      alert("保存に失敗しました");
+    } finally {
+      setSaving(false);
+    }
   };
 
   useEffect(() => {
@@ -129,16 +169,30 @@ function HomePage() {
 
   const handleTagNavigate = (tag) => navigate(`/tag/${tag}`);
 
+  const handleLogout = () => signOut(auth);
+
   const selectedKey = dateKey(selectedDay);
-  const selectedComment =
-    diaryData[selectedKey]?.tags?.[selectedTag] ?? "";
+  const selectedComment = diaryData[selectedKey]?.tags?.[selectedTag] ?? "";
 
   return (
     <div className="app">
       {/* ===== ヘッダー ===== */}
       <Header />
 
-      {/* ===== タグメニュー（上） ===== */}
+      {/* ===== ユーザー情報＋ログアウト ===== */}
+      <div className="user-bar">
+        <img
+          className="user-avatar"
+          src={user.photoURL}
+          alt={user.displayName}
+        />
+        <span className="user-name">{user.displayName}</span>
+        <button className="logout-btn" onClick={handleLogout}>
+          ログアウト
+        </button>
+      </div>
+
+      {/* ===== タグメニュー ===== */}
       <div className="tag-menu">
         {tagList.map((tag) => (
           <button
@@ -151,10 +205,9 @@ function HomePage() {
         ))}
       </div>
 
-      {/* ===== 300pxの暗い間 ===== */}
       <div className="homeBigGap" />
 
-      {/* ===== 連続記録（下） ===== */}
+      {/* ===== 連続記録 ===== */}
       <Streak streak={streak} isStreakUp={streak > 0} />
 
       {/* ===== カレンダー ===== */}
@@ -173,6 +226,7 @@ function HomePage() {
         onTagChange={handleTagChange}
         onSave={handleSave}
         tagList={tagList}
+        saving={saving}
       />
 
       {/* ===== 月移動 ===== */}
@@ -180,11 +234,9 @@ function HomePage() {
         <button className="month-nav-btn" onClick={handlePrevMonth}>
           ← 前月
         </button>
-
         <span className="month-nav-label">
           {currentYear}年{currentMonth}月
         </span>
-
         <button className="month-nav-btn" onClick={handleNextMonth}>
           次月 →
         </button>
@@ -196,11 +248,69 @@ function HomePage() {
 /* ===== Router ===== */
 
 export default function App() {
+  const [user, setUser] = useState(null);
+  const [diaryData, setDiaryData] = useState({});
+  const [authLoading, setAuthLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(false);
+
+  // ログイン状態の監視
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      setAuthLoading(false);
+
+      if (currentUser) {
+        // Firestoreからデータ読み込み
+        setDataLoading(true);
+        try {
+          const ref = doc(db, "diaries", currentUser.uid);
+          const snap = await getDoc(ref);
+          if (snap.exists()) {
+            setDiaryData(snap.data().data ?? {});
+          }
+        } catch (e) {
+          console.error("データ読み込み失敗:", e);
+        } finally {
+          setDataLoading(false);
+        }
+      } else {
+        setDiaryData({});
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (authLoading || dataLoading) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-icon">💪</div>
+        <p>読み込み中...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginPage />;
+  }
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/tag/:tagName" element={<TagPage />} />
+        <Route
+          path="/"
+          element={
+            <HomePage
+              user={user}
+              diaryData={diaryData}
+              setDiaryData={setDiaryData}
+            />
+          }
+        />
+        <Route
+          path="/tag/:tagName"
+          element={<TagPage diaryData={diaryData} />}
+        />
       </Routes>
     </Router>
   );

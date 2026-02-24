@@ -736,3 +736,128 @@ body {
   background: rgba(255, 87, 34, 0.2);
   border-color: #ff9800;
 }
+
+/* =====================
+   サイクル設定
+   ===================== */
+   .cycle-settings {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto 24px;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(255, 87, 34, 0.1), rgba(255, 152, 0, 0.1));
+    border-radius: 20px;
+    border: 2px solid rgba(255, 152, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(255, 87, 34, 0.2);
+  }
+  
+  .cycle-title {
+    color: #ffc107;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+  
+  .cycle-add-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  
+  .cycle-add-btn {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 2px solid;
+    background: transparent;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  
+  .cycle-add-btn:hover {
+    opacity: 0.7;
+  }
+  
+  .cycle-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    min-height: 50px;
+  }
+  
+  .cycle-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    cursor: grab;
+    user-select: none;
+  }
+  
+  .cycle-remove-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.8;
+    padding: 0;
+  }
+  
+  .cycle-empty {
+    font-size: 14px;
+    color: #888;
+  }
+  
+  .cycle-start {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .cycle-start-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffc107;
+    white-space: nowrap;
+  }
+  
+  .cycle-start-input {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 152, 0, 0.3);
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 14px;
+  }
+  
+  @media (min-width: 768px) {
+    .cycle-settings {
+      max-width: 100%;
+      grid-column: 1 / -1;
+    }
+  }
+
+  .cycle-confirm-btn {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 2px solid #ffc107;
+    background: linear-gradient(135deg, #ff5722, #ff9800);
+    color: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  
+  .cycle-confirm-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }

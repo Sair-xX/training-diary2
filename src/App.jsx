@@ -20,6 +20,7 @@ import Header from "./components/Header.jsx";
 import Calendar from "./components/Calendar.jsx";
 import Streak from "./components/Streak.jsx";
 import DiaryEditor from "./components/DiaryEditor.jsx";
+import CycleSettings from "./components/CycleSettings.jsx";
 import TagPage from "./pages/TagPage.jsx";
 import "./index.css";
 
@@ -49,6 +50,18 @@ function calcStreak(diaryData) {
     }
   }
   return count;
+}
+
+function getCycleColorForDate(dateKey, cycleSettings) {
+  if (!cycleSettings || !cycleSettings.startDate || !cycleSettings.cycle || cycleSettings.cycle.length === 0) return null;
+  const start = new Date(cycleSettings.startDate);
+  const target = new Date(dateKey);
+  const diffTime = target - start;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays < 0) return null;
+  const index = diffDays % cycleSettings.cycle.length;
+  const item = cycleSettings.cycle[index];
+  return Array.isArray(item) ? item : [item];
 }
 
 function LoginPage() {
@@ -87,10 +100,11 @@ function HomePage({ user, diaryData, setDiaryData }) {
   const [streak, setStreak] = useState(() => calcStreak(diaryData));
   const [saving, setSaving] = useState(false);
   const [localComment, setLocalComment] = useState("");
+  const [cycleSettings, setCycleSettings] = useState(null);
 
   const navigate = useNavigate();
 
-  const tagList = ["胸", "肩", "2頭筋", "3頭筋"];
+  const tagList = ["胸", "肩", "2頭筋", "3頭筋", "背中", "脚"];
   const [selectedTag, setSelectedTag] = useState(tagList[0]);
 
   const dateKey = (day) => {
@@ -106,14 +120,8 @@ function HomePage({ user, diaryData, setDiaryData }) {
   }, [selectedDay, selectedTag, selectedKey]);
 
   const handleDateSelect = (day) => setSelectedDay(day);
-
-  const handleCommentChange = (_day, text) => {
-    setLocalComment(text);
-  };
-
-  const handleTagChange = (_day, tag) => {
-    setSelectedTag(tag);
-  };
+  const handleCommentChange = (_day, text) => setLocalComment(text);
+  const handleTagChange = (_day, tag) => setSelectedTag(tag);
 
   const handleSave = async () => {
     setSaving(true);
@@ -145,27 +153,29 @@ function HomePage({ user, diaryData, setDiaryData }) {
   }, [diaryData]);
 
   const handlePrevMonth = () => {
-    if (currentMonth === 1) {
-      setCurrentYear((y) => y - 1);
-      setCurrentMonth(12);
-    } else {
-      setCurrentMonth((m) => m - 1);
-    }
+    if (currentMonth === 1) { setCurrentYear((y) => y - 1); setCurrentMonth(12); }
+    else setCurrentMonth((m) => m - 1);
     setSelectedDay(1);
   };
 
   const handleNextMonth = () => {
-    if (currentMonth === 12) {
-      setCurrentYear((y) => y + 1);
-      setCurrentMonth(1);
-    } else {
-      setCurrentMonth((m) => m + 1);
-    }
+    if (currentMonth === 12) { setCurrentYear((y) => y + 1); setCurrentMonth(1); }
+    else setCurrentMonth((m) => m + 1);
     setSelectedDay(1);
   };
 
   const handleTagNavigate = (tag) => navigate(`/tag/${tag}`);
   const handleLogout = () => signOut(auth);
+
+  const cycleColorMap = {};
+  if (cycleSettings) {
+    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = dateKey(d);
+      const items = getCycleColorForDate(key, cycleSettings);
+      if (items) cycleColorMap[key] = items;
+    }
+  }
 
   return (
     <div className="app">
@@ -174,20 +184,21 @@ function HomePage({ user, diaryData, setDiaryData }) {
       <div className="user-bar">
         <img className="user-avatar" src={user.photoURL} alt={user.displayName} />
         <span className="user-name">{user.displayName}</span>
-        <button className="logout-btn" onClick={handleLogout}>
-          ログアウト
-        </button>
+        <button className="logout-btn" onClick={handleLogout}>ログアウト</button>
       </div>
 
       <div className="tag-menu">
         {tagList.map((tag) => (
-          <button key={tag} className="tag-btn" onClick={() => handleTagNavigate(tag)}>
-            {tag}
-          </button>
+          <button key={tag} className="tag-btn" onClick={() => handleTagNavigate(tag)}>{tag}</button>
         ))}
       </div>
 
       <div className="homeBigGap" />
+
+      <CycleSettings
+        cycleSettings={cycleSettings}
+        onChange={setCycleSettings}
+      />
 
       <div className="calendar-wrap">
         <Streak streak={streak} isStreakUp={streak > 0} />
@@ -196,6 +207,7 @@ function HomePage({ user, diaryData, setDiaryData }) {
           month={currentMonth}
           selectedDay={selectedDay}
           onDateSelect={handleDateSelect}
+          cycleColorMap={cycleColorMap}
         />
       </div>
 
@@ -228,15 +240,12 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       setAuthLoading(false);
-
       if (currentUser) {
         setDataLoading(true);
         try {
           const ref = doc(db, "diaries", currentUser.uid);
           const snap = await getDoc(ref);
-          if (snap.exists()) {
-            setDiaryData(snap.data().data ?? {});
-          }
+          if (snap.exists()) setDiaryData(snap.data().data ?? {});
         } catch (e) {
           console.error("データ読み込み失敗:", e);
         } finally {
@@ -246,7 +255,6 @@ export default function App() {
         setDiaryData({});
       }
     });
-
     return () => unsubscribe();
   }, []);
 
@@ -259,27 +267,13 @@ export default function App() {
     );
   }
 
-  if (!user) {
-    return <LoginPage />;
-  }
+  if (!user) return <LoginPage />;
 
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage
-              user={user}
-              diaryData={diaryData}
-              setDiaryData={setDiaryData}
-            />
-          }
-        />
-        <Route
-          path="/tag/:tagName"
-          element={<TagPage diaryData={diaryData} />}
-        />
+        <Route path="/" element={<HomePage user={user} diaryData={diaryData} setDiaryData={setDiaryData} />} />
+        <Route path="/tag/:tagName" element={<TagPage diaryData={diaryData} />} />
       </Routes>
     </Router>
   );

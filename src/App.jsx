@@ -23,8 +23,6 @@ import DiaryEditor from "./components/DiaryEditor.jsx";
 import TagPage from "./pages/TagPage.jsx";
 import "./index.css";
 
-/* ===== 連続記録ロジック ===== */
-
 function makeDateKeyLocal(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -53,9 +51,7 @@ function calcStreak(diaryData) {
   return count;
 }
 
-/* ===== ログイン画面 ===== */
-
-function LoginPage({ onLogin }) {
+function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -75,19 +71,13 @@ function LoginPage({ onLogin }) {
         <div className="login-icon">💪</div>
         <h1 className="login-title">筋トレ日記</h1>
         <p className="login-subtitle">記録を残して、毎日続けよう</p>
-        <button
-          className="login-btn"
-          onClick={handleLogin}
-          disabled={loading}
-        >
+        <button className="login-btn" onClick={handleLogin} disabled={loading}>
           {loading ? "ログイン中..." : "Googleでログイン"}
         </button>
       </div>
     </div>
   );
 }
-
-/* ===== HomePage ===== */
 
 function HomePage({ user, diaryData, setDiaryData }) {
   const now = new Date();
@@ -96,6 +86,7 @@ function HomePage({ user, diaryData, setDiaryData }) {
   const [selectedDay, setSelectedDay] = useState(now.getDate());
   const [streak, setStreak] = useState(() => calcStreak(diaryData));
   const [saving, setSaving] = useState(false);
+  const [localComment, setLocalComment] = useState("");
 
   const navigate = useNavigate();
 
@@ -108,33 +99,40 @@ function HomePage({ user, diaryData, setDiaryData }) {
     return `${currentYear}-${mm}-${dd}`;
   };
 
+  const selectedKey = dateKey(selectedDay);
+
+  // 日付かタグが変わったらローカルコメントをリセット
+  useEffect(() => {
+    setLocalComment(diaryData[selectedKey]?.tags?.[selectedTag] ?? "");
+  }, [selectedDay, selectedTag, selectedKey]);
+
   const handleDateSelect = (day) => setSelectedDay(day);
 
-  const handleCommentChange = (day, text) => {
-    const key = dateKey(day);
-    setDiaryData((prev) => ({
-      ...prev,
-      [key]: {
-        ...(prev[key] ?? {}),
-        tags: {
-          ...((prev[key]?.tags) ?? {}),
-          [selectedTag]: text,
-        },
-      },
-    }));
+  const handleCommentChange = (_day, text) => {
+    setLocalComment(text);
   };
 
   const handleTagChange = (_day, tag) => {
     setSelectedTag(tag);
   };
 
-  // Firestoreに保存
   const handleSave = async () => {
     setSaving(true);
     try {
+      const newData = {
+        ...diaryData,
+        [selectedKey]: {
+          ...(diaryData[selectedKey] ?? {}),
+          tags: {
+            ...((diaryData[selectedKey]?.tags) ?? {}),
+            [selectedTag]: localComment,
+          },
+        },
+      };
       const ref = doc(db, "diaries", user.uid);
-      await setDoc(ref, { data: diaryData }, { merge: false });
-      setStreak(calcStreak(diaryData));
+      await setDoc(ref, { data: newData }, { merge: false });
+      setDiaryData(newData);
+      setStreak(calcStreak(newData));
     } catch (e) {
       console.error("保存失敗:", e);
       alert("保存に失敗しました");
@@ -168,38 +166,23 @@ function HomePage({ user, diaryData, setDiaryData }) {
   };
 
   const handleTagNavigate = (tag) => navigate(`/tag/${tag}`);
-
   const handleLogout = () => signOut(auth);
-
-  const selectedKey = dateKey(selectedDay);
-  const selectedComment = diaryData[selectedKey]?.tags?.[selectedTag] ?? "";
 
   return (
     <div className="app">
-      {/* ===== ヘッダー ===== */}
       <Header />
 
-      {/* ===== ユーザー情報＋ログアウト ===== */}
       <div className="user-bar">
-        <img
-          className="user-avatar"
-          src={user.photoURL}
-          alt={user.displayName}
-        />
+        <img className="user-avatar" src={user.photoURL} alt={user.displayName} />
         <span className="user-name">{user.displayName}</span>
         <button className="logout-btn" onClick={handleLogout}>
           ログアウト
         </button>
       </div>
 
-      {/* ===== タグメニュー ===== */}
       <div className="tag-menu">
         {tagList.map((tag) => (
-          <button
-            key={tag}
-            className="tag-btn"
-            onClick={() => handleTagNavigate(tag)}
-          >
+          <button key={tag} className="tag-btn" onClick={() => handleTagNavigate(tag)}>
             {tag}
           </button>
         ))}
@@ -207,10 +190,8 @@ function HomePage({ user, diaryData, setDiaryData }) {
 
       <div className="homeBigGap" />
 
-      {/* ===== 連続記録 ===== */}
       <Streak streak={streak} isStreakUp={streak > 0} />
 
-      {/* ===== カレンダー ===== */}
       <Calendar
         year={currentYear}
         month={currentMonth}
@@ -218,10 +199,9 @@ function HomePage({ user, diaryData, setDiaryData }) {
         onDateSelect={handleDateSelect}
       />
 
-      {/* ===== 日記入力 ===== */}
       <DiaryEditor
         selectedDay={selectedDay}
-        data={{ comment: selectedComment, tag: selectedTag }}
+        data={{ comment: localComment, tag: selectedTag }}
         onCommentChange={handleCommentChange}
         onTagChange={handleTagChange}
         onSave={handleSave}
@@ -229,23 +209,14 @@ function HomePage({ user, diaryData, setDiaryData }) {
         saving={saving}
       />
 
-      {/* ===== 月移動 ===== */}
       <div className="month-nav">
-        <button className="month-nav-btn" onClick={handlePrevMonth}>
-          ← 前月
-        </button>
-        <span className="month-nav-label">
-          {currentYear}年{currentMonth}月
-        </span>
-        <button className="month-nav-btn" onClick={handleNextMonth}>
-          次月 →
-        </button>
+        <button className="month-nav-btn" onClick={handlePrevMonth}>← 前月</button>
+        <span className="month-nav-label">{currentYear}年{currentMonth}月</span>
+        <button className="month-nav-btn" onClick={handleNextMonth}>次月 →</button>
       </div>
     </div>
   );
 }
-
-/* ===== Router ===== */
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -253,14 +224,12 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true);
   const [dataLoading, setDataLoading] = useState(false);
 
-  // ログイン状態の監視
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       setAuthLoading(false);
 
       if (currentUser) {
-        // Firestoreからデータ読み込み
         setDataLoading(true);
         try {
           const ref = doc(db, "diaries", currentUser.uid);

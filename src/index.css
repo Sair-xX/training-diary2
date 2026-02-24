@@ -396,56 +396,77 @@ body {
 /* =====================
    デスクトップ レスポンシブ
    ===================== */
-@media (min-width: 768px) {
-  .app-header {
-    max-width: 720px;
-  }
-
-  .calendar-container {
-    max-width: 720px;
-    gap: 14px;
-  }
-
-  .calendar-day {
-    font-size: 17px;
-    border-radius: 16px;
-  }
-
-  .calendar-weekday {
-    font-size: 15px;
-  }
-
-  .diary-editor {
-    max-width: 720px;
-  }
-
-  .diary-editor textarea {
-    min-height: 120px;
-    font-size: 16px;
-  }
-
-  .tag-menu, .tag-selector {
-    gap: 12px;
-  }
-
-  .tag-btn {
-    padding: 10px 24px;
-    font-size: 14px;
-  }
-
-  .filtered-comments {
-    max-width: 720px;
-  }
-
-  .streak {
-    font-size: 18px;
-  }
-
-  .header-title {
-    font-size: 36px;
-  }
-}
-/* ===== TagPage: old-like UI ===== */
+   @media (min-width: 768px) {
+    .app {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "header header"
+        "userbar userbar"
+        "tagmenu tagmenu"
+        "main main"
+        "nav nav";
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+  
+    .app-header  { grid-area: header; max-width: 100%; }
+    .user-bar    { grid-area: userbar; max-width: 100%; }
+    .tag-menu    { grid-area: tagmenu; margin-bottom: 0; padding-bottom: 120px; }
+    .homeBigGap  { display: none; }
+    .month-nav   { grid-area: nav; }
+  
+    .app > .calendar-wrap {
+      grid-column: 1;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 120px;
+    }
+  
+    .app > .diary-editor {
+      grid-column: 2;
+      max-width: 100%;
+      margin: 0 0 120px 0;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    .streak {
+      max-width: 100%;
+      margin: 0 0 16px 0;
+    }
+  
+    .calendar-container {
+      max-width: 100%;
+      margin: 0;
+      padding: 0 8px;
+    }
+  
+    .diary-editor textarea {
+      flex: 1;
+      min-height: 300px;
+      font-size: 16px;
+    }
+  
+    .calendar-day {
+      font-size: 17px;
+      border-radius: 16px;
+    }
+  
+    .calendar-weekday {
+      font-size: 15px;
+    }
+  
+    .tag-btn {
+      padding: 10px 24px;
+      font-size: 14px;
+    }
+  
+    .header-title {
+      font-size: 36px;
+    }
+  }/* ===== TagPage: old-like UI ===== */
 .tagOldPage {
   min-height: 100vh;
 }

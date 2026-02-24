@@ -101,7 +101,6 @@ function HomePage({ user, diaryData, setDiaryData }) {
 
   const selectedKey = dateKey(selectedDay);
 
-  // 日付かタグが変わったらローカルコメントをリセット
   useEffect(() => {
     setLocalComment(diaryData[selectedKey]?.tags?.[selectedTag] ?? "");
   }, [selectedDay, selectedTag, selectedKey]);
@@ -190,14 +189,15 @@ function HomePage({ user, diaryData, setDiaryData }) {
 
       <div className="homeBigGap" />
 
-      <Streak streak={streak} isStreakUp={streak > 0} />
-
-      <Calendar
-        year={currentYear}
-        month={currentMonth}
-        selectedDay={selectedDay}
-        onDateSelect={handleDateSelect}
-      />
+      <div className="calendar-wrap">
+        <Streak streak={streak} isStreakUp={streak > 0} />
+        <Calendar
+          year={currentYear}
+          month={currentMonth}
+          selectedDay={selectedDay}
+          onDateSelect={handleDateSelect}
+        />
+      </div>
 
       <DiaryEditor
         selectedDay={selectedDay}

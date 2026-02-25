@@ -12,7 +12,7 @@ import {
 } from "firebase/auth";
 import {
   doc,
-  getDoc,
+  onSnapshot,
   setDoc,
 } from "firebase/firestore";
 import { auth, provider, db } from "./firebase.js";
@@ -244,9 +244,10 @@ export default function App() {
         setDataLoading(true);
         try {
           const ref = doc(db, "diaries", currentUser.uid);
-          const snap = await getDoc(ref);
-          if (snap.exists()) setDiaryData(snap.data().data ?? {});
-        } catch (e) {
+          const unsubscribe = onSnapshot(ref, (snap) => {
+            if (snap.exists()) setDiaryData(snap.data().data ?? {});
+          });
+          return () => unsubscribe();        } catch (e) {
           console.error("データ読み込み失敗:", e);
         } finally {
           setDataLoading(false);

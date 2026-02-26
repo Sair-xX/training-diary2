@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function DiaryEditor({ selectedDay, data, onCommentChange, onTagChange, onSave, tagList, saving }) {
+function DiaryEditor({ selectedDay, data, onCommentChange, onTagChange, onSave, onDelete, tagList, saving }) {
   const [saveMsg, setSaveMsg] = useState(false);
 
   if (!selectedDay) selectedDay = new Date().getDate();
@@ -37,6 +37,14 @@ function DiaryEditor({ selectedDay, data, onCommentChange, onTagChange, onSave, 
         {saving ? "保存中..." : "💪 保存"}
       </button>
       {saveMsg && <span className="save-msg">✅ 保存しました！</span>}
+
+      <button className="delete-btn" onClick={() => {
+        if (window.confirm("この日の記録を削除しますか？")) {
+          onDelete();
+        }
+      }}>
+        🗑️ 削除
+      </button>
     </div>
   );
 }

@@ -148,6 +148,12 @@ function HomePage({ user, diaryData, setDiaryData }) {
     }
   };
 
+  const handleDelete = async () => {
+    const newData = { ...diaryData };
+    delete newData[selectedKey];
+    const ref = doc(db, "diaries", user.uid); // ← 追加！
+    await setDoc(ref, { data: newData }, { merge: false });
+  };
   useEffect(() => {
     setStreak(calcStreak(diaryData));
   }, [diaryData]);
@@ -217,6 +223,7 @@ function HomePage({ user, diaryData, setDiaryData }) {
         onCommentChange={handleCommentChange}
         onTagChange={handleTagChange}
         onSave={handleSave}
+        onDelete={handleDelete}
         tagList={tagList}
         saving={saving}
       />

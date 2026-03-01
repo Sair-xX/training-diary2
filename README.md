@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+# 🏋️ Training Diary
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+筋トレの記録をカレンダーで管理するモチベーション特化型Webアプリ。
 
-Currently, two official plugins are available:
+## ✨ 機能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📅 **カレンダービュー** — 月ごとの筋トレ記録を一覧表示
+- 🏷️ **部位タグ管理** — 胸 / 肩 / 2頭筋 / 3頭筋 など複数部位に対応
+- 📝 **日記エディター** — 選択した日付にコメントとタグを記録
+- 🔥 **ストリーク表示** — 連続記録日数をモチベーション表示
+- 📊 **タグページ** — 部位ごとの記録履歴を一覧確認
 
-## React Compiler
+## 🛠️ 技術スタック
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| 項目 | 使用技術 |
+|------|----------|
+| フロントエンド | React 19 |
+| ルーティング | React Router DOM v7 |
+| ビルドツール | Vite 7 |
+| スタイリング | カスタム CSS（グラデーション / アニメーション） |
+| データ保存 | localStorage |
+| デプロイ | Netlify（GitHub連携 / 自動デプロイ） |
 
-## Expanding the ESLint configuration
+## 🚀 セットアップ
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 必要な環境
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js `>=20.19.0` または `>=22.12.0`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### インストールと起動
+```bash
+# リポジトリをクローン
+git clone https://github.com/your-username/training-diary2.git
+cd training-diary2
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 依存パッケージをインストール
+npm install
+
+# 開発サーバー起動
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+ブラウザで `http://localhost:5173` を開く。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### ビルド
+```bash
+npm run build
 ```
+
+ビルド成果物は `dist/` フォルダに出力される。
+
+## 📁 ディレクトリ構成
+```
+training-diary2/
+├── public/
+├── src/
+│   ├── components/
+│   │   ├── Header.jsx       # ヘッダー
+│   │   ├── Calendar.jsx     # カレンダー表示
+│   │   ├── DiaryEditor.jsx  # 日記入力エディター
+│   │   └── Streak.jsx       # ストリーク表示
+│   ├── pages/
+│   │   └── TagPage.jsx      # タグ別記録一覧ページ
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+├── index.html
+├── vite.config.js
+└── package.json
+```
+
+## 🌐 デプロイ
+
+GitHub リポジトリと Netlify を連携することで、`main` ブランチへのプッシュ時に自動デプロイが実行される。
+```
+[StackBlitz / VS Code] → [GitHub push] → [Netlify 自動ビルド & デプロイ]
+```
+
+## 📌 使い方
+
+1. カレンダーの日付をクリックして記録したい日を選択
+2. 部位タグ（胸・肩など）を選択
+3. コメントを入力して保存ボタンを押す
+4. ヘッダーのタグメニューから部位別の記録一覧ページへ移動可能
+
+## 📝 ライセンス
+
+MIT
